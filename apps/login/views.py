@@ -4,6 +4,8 @@ from django.contrib import messages
 import bcrypt
 
 def index(request):
+    if 'logged_in' not in request.session:
+        request.session['logged_in'] = False
     return render(request, 'index.html')
 
 def registration(request):
