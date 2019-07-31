@@ -4,11 +4,13 @@ from django.contrib import messages
 import bcrypt
 
 def index(request):
+    print('index' * 50)
     if 'logged_in' not in request.session:
         request.session['logged_in'] = False
     return render(request, 'index.html')
 
 def registration(request):
+    print('reg' * 50)
     reg_errors = User.objects.basic_validator(request.POST)
 
     if len(reg_errors) > 0:
@@ -28,9 +30,10 @@ def registration(request):
 
         request.session['logged_in'] = True
 
-        return redirect('/success')
+        return redirect('/wall/')
 
 def login(request):    
+    print('login' * 50)
     log_errors = User.objects.login_validator(request.POST)
 
     if len(log_errors) > 0:
@@ -47,13 +50,14 @@ def login(request):
 
             request.session['logged_in'] = True
 
-            return redirect('/success')
+            return redirect('/wall/')
 
         else:
             messages.error(request, "Your login info is incorrect!", extra_tags='login_error')
             return redirect('/')
 
 def success(request):
+    print('success' * 50)
     if request.session['logged_in'] != True:
         return redirect('/')
 
@@ -65,6 +69,7 @@ def success(request):
         return render(request, 'success.html', context)
 
 def logout(request):
+    print('logout' * 50)
     request.session.clear()
     request.session['logged_in'] = False
     return redirect('/')

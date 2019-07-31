@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>Wall</title>
+</head>
+
+<body class="bg-dark">
+    <div class="container bg-light p-5">
+
+        <!-------------------- Header -------------------->
+        <div class="row border-bottom border-dark mb-2">
+            <h1 class="col-8 p-0">CodingDojo Wall</h1>
+            <h5 class="col p-0">Welcome {{user.first_name}}!</h5>
+            <a href="/logout" class="col-1 p-0 text-info">log off</a>
+        </div>
+
+        <!-------------------- Message Form -------------------->
+        <form action="/wall/post_msg" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <label for="post">Post a Message</label>
+                <textarea class="form-control mb-2" name="message" id="text_area" rows="5"></textarea>
+            </div>
+
+            <div class="row mb-3">
+                <div class="col-2 p-0">
+                    <input type="submit" value="Post a message" class="form-control btn btn-dark">
+                </div>
+            </div>
+        </form>
+
+        <!-------------------- Display Messages with delete option if the user created the message  -------------------->
+        {% for message in all_messages reversed %}
+        <p class="d-inline-block"><b>{{message.users.first_name}} {{message.users.last_name}} -
+                {{message.created_at}}</b></p>
+        {% if user.id == message.users.id%}<a href="/wall/{{message.id}}/delete_message"
+            class="text-danger d-inline-block">Delete Message</a>
+        {% endif %}
+        <p class="ml-3">{{message.message}}</p>
+
+        <!-------------------- Display Message Likes -------------------->
+        <a class="btn-sm btn-primary mb-3 ml-3" href="/wall/{{message.id}}/like_message" role="button">Like</a>
+
+        Liked by:
+        {%for like in message.likes.all %}
+        <p class="d-inline-block"><u>{{like.user.first_name}} </u></p>
+        {% endfor %}
+
+        <!-------------------- Comment Label -------------------->
+        <p class="text-info"><u>Comments</u></p>
+
+        <!-------------------- Display Comments with delete option if the user created the comment  -------------------->
+        {% for comment in message.comments.all %}
+        <p class="d-inline-block ml-4"><b>{{comment.users.first_name}} {{comment.users.last_name}} -
+                {{comment.created_at}}</b></p>
+        {% if user.id == comment.users.id %}<a href="/wall/{{comment.id}}/delete_comment"
+            class="text-danger d-inline-block">Delete Comment</a>
+        {% endif %}
+        <p class="ml-5">{{comment.comment}}</p>
+
+        {% endfor %}
+
+        <!-------------------- Comment Form -------------------->
+        <form action="/wall/post_cmt" method="post">
+            {% csrf_token %}
+            <div class="row">
+                <label for="post" class="ml-5">Post a Comment</label>
+                <textarea class="form-control mb-2 ml-5" name="comment" id="text_area" rows="1"></textarea>
+                <input type="hidden" name="msg_id" value="{{message.id}}">
+            </div>
+
+            <div class="row">
+                <div class="col-2 p-0">
+                    <input type="submit" value="Post a comment" class="form-control btn btn-dark ml-5 mb-5">
+                </div>
+            </div>
+        </form>
+        {% endfor %}
+
+    </div>
+
+</body>
+
+</html>
